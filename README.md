@@ -14,7 +14,7 @@ The R function `markdownToHTML` renders a markdown file to HTML. Options
 controlling HTML output and supported markdown extensions can be optionally
 specified.
 
-The package also exports the underlying Sundown C extension API which
+The package also exports the underlying Hoedown C extension API which
 enables creating and calling custom renderers using the `renderMarkdown`
 function.
 
@@ -29,7 +29,7 @@ http://rmarkdown.rstudio.com for details.
 License
 -----------------------------------------------------------------------------
 
-The markdown package is licensed under the GPLv2. See these files for
+The rhoedown package is licensed under the GPLv2. See these files for
 additional details:
 
 - inst/COPYING - Markdown package license (GPLv2)
