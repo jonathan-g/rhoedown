@@ -1,4 +1,4 @@
-#include "Rmarkdown.h"
+#include "Rhoedown.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,7 +20,7 @@ void encodeblock( unsigned char in[3], unsigned char out[4], int len )
    out[3] = (unsigned char) (len > 2 ? cb64[ in[2] & 0x3f ] : '=');
 }
 
-SEXP rmd_b64encode_data( SEXP Sdata)
+SEXP rhd_b64encode_data( SEXP Sdata)
 {
    unsigned char in[3], out[4];
    int i, len;
@@ -29,15 +29,15 @@ SEXP rmd_b64encode_data( SEXP Sdata)
    int data_elem = 0;
    Rbyte *data = RAW(Sdata);
    SEXP ans;
-   struct buf *databuf;
+   hoedown_buffer *databuf;
    const char* str;
 
    /* Create a buffer that grows READ_UNIT bytes at
       the time as a larger buffer is needed */
-   databuf = bufnew(READ_UNIT);
+   databuf = hoedown_buffer_new(READ_UNIT);
    if (!databuf)
    {
-      RMD_WARNING_NOMEM;
+      RHD_WARNING_NOMEM;
       return R_NilValue;
    }
 
@@ -53,21 +53,21 @@ SEXP rmd_b64encode_data( SEXP Sdata)
       }
       if( len ) {
          encodeblock( in, out, len );
-         bufput(databuf,out,4);
+         hoedown_buffer_put(databuf,out,4);
       }
    }
 
-   str = bufcstr(databuf);
+   str = hoedown_buffer_cstr(databuf);
    if (!str)
    {
-      bufrelease(databuf);
-      RMD_WARNING_NOMEM;
+      hoedown_buffer_free(databuf);
+      RHD_WARNING_NOMEM;
       return R_NilValue;
    }
      
    PROTECT(ans = allocVector(STRSXP,1));
    SET_STRING_ELT(ans,0,mkChar(str));
-   bufrelease(databuf);
+   hoedown_buffer_free(databuf);
    UNPROTECT(1);
 
    return ans;

@@ -1,6 +1,6 @@
 roxygen:
-	cd .. && rm -f markdown_*.tar.gz && R -e "library(Rd2roxygen)" \
-		-e "rab('markdown', install=TRUE)"
+	cd .. && rm -f rhoedown_*.tar.gz && R -e "library(Rd2roxygen)" \
+		-e "rab('rhoedown', install=TRUE)"
 
 tests: tests/tests.Rout.save
 
@@ -8,4 +8,4 @@ tests/tests.Rout.save: tests/tests.R inst/examples/markdownExtensions.R inst/exa
 	cd tests && R CMD BATCH --no-save --no-restore --no-timing tests.R tests.Rout.save
 
 check:
-	cd .. && R CMD check markdown_*.tar.gz --as-cran --no-manual
+	cd .. && R CMD check rhoedown_*.tar.gz --as-cran --no-manual

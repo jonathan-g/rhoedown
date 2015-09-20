@@ -1,4 +1,4 @@
-library(markdown)
+library(rhoedown)
 
 ## Download
 url = "http://www.r-project.org/Rlogo.png"

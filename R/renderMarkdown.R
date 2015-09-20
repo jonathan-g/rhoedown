@@ -26,7 +26,7 @@
 #' @examples
 #' # List all available renderers
 #' registeredRenderers()
-registeredRenderers <- function() .Call(rmd_registered_renderers)
+registeredRenderers <- function() .Call(rhd_registered_renderers)
 
 
 #' Testing for existence of a markdown renderer
@@ -108,7 +108,7 @@ renderMarkdown <- function(
   # Input from either a file or character vector
   if (!is.character(text)) {
     # If input is file, it needs to be read with the appropriate encoding. Here,
-    # instead of tweaking rmd_render_markdown in Rmarkdown.c, read a file with
+    # instead of tweaking rhd_render_markdown in Rmarkdown.c, read a file with
     # the encoding and convert it to UTF-8. Finally, output will be marked as
     # UTF-8 as well.
     con <- base::file(file, encoding = encoding)
@@ -133,7 +133,7 @@ renderMarkdown <- function(
      file.create(output)
      return()
   }
-  ret <- .Call(rmd_render_markdown,
+  ret <- .Call(rhd_render_markdown,
                file, output, text, renderer, renderer.options, extensions)
 
   if (is.raw(ret) && rendererOutputType(renderer) == 'character') {
@@ -152,7 +152,7 @@ renderMarkdown <- function(
     return(inFile)
   }
   paste( 'data:', mime::guess_type(inFile), ';base64,',
-         .Call(rmd_b64encode_data, readBin(inFile, 'raw', n = fileSize)),
+         .Call(rhd_b64encode_data, readBin(inFile, 'raw', n = fileSize)),
          sep = '')
 }
 
@@ -426,7 +426,7 @@ smartypants <- function(file, output, text) {
   if (missing(output)) output <- NULL else if (!is.character(output))
     stop('output variable must be a file name!');
 
-  ret <- .Call(rmd_render_smartypants, file, output, text)
+  ret <- .Call(rhd_render_smartypants, file, output, text)
   if (is.raw(ret)) ret <- rawToChar(ret)
 
   invisible(ret)

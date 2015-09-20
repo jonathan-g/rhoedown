@@ -1,9 +1,10 @@
-Package: markdown
+Package: rhoedown
 Type: Package
-Title: 'Markdown' Rendering for R
-Version: 0.7.9
-Date: 2015-04-23
+Title: 'Markdown' Rendering for R with Hoedown library
+Version: 0.1.9000
+Date: 2015-09-19
 Authors@R: c(
+   person("Jonathan", "Gilligan", role = c("cre","aut"), email="jonathan.gilligan@gmail.com"),
    person("JJ", "Allaire", role = "aut"),
    person("Jeffrey", "Horner", role = "aut"),
    person("Henrik", "Bengtsson", role = "ctb"),
@@ -18,15 +19,17 @@ Authors@R: c(
    person("Andrzej", "Oles", role = "ctb"),
    person("Vicent", "Marti", role = c("aut", "cph"), comment = "The Sundown library"),
    person("Natacha", "Porte", role = c("aut", "cph"), comment = "The Sundown library"),
+   person("Xavier", "Mendez", role = c("aut", "cph"), comment = "The Hoedown library"),
+   person("Devin", "Torres", role = c("aut", "cph"), comment = "The Hoedown library"),
    person(family = "RStudio", role = "cph"),
-   person("Yihui", "Xie", role = c("cre", "ctb"), email = "xie@yihui.name")
+   person("Yihui", "Xie", role = c("ctb"))
    )
-Description:  Provides R bindings to the 'Sundown' 'Markdown' rendering library
-   (https://github.com/vmg/sundown). 'Markdown' is a plain-text formatting
+Description:  Provides R bindings to the 'Hoedown' 'Markdown' rendering library
+   (https://github.com/hoedown/hoedown). 'Markdown' is a plain-text formatting
    syntax that can be converted to 'XHTML' or other formats. See
    http://en.wikipedia.org/wiki/Markdown for more information about 'Markdown'.
 Depends:
-    R (>= 2.11.1)
+    R (>= 3.2.2)
 Imports:
    utils,
    mime (>= 0.3)
@@ -34,6 +37,6 @@ Suggests:
     knitr,
     RCurl
 License: GPL-2
-URL: https://github.com/rstudio/markdown
-BugReports: https://github.com/rstudio/markdown/issues
+URL: https://github.com/jonathan-g/rhoedown
+BugReports: https://github.com/jonathan-g/rhoedown
 VignetteBuilder: knitr

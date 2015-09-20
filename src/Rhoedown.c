@@ -11,22 +11,22 @@
  *
  */
 
-#include "Rmarkdown.h"
+#include "Rhoedown.h"
 
 #define NREND 8
 
-static struct rmd_renderer RENDERERS[NREND];
+static struct rhd_renderer RENDERERS[NREND];
 
-static struct rmd_renderer *renderer(const char *name);
+static struct rhd_renderer *renderer(const char *name);
 
-static Rboolean render_to_html(struct buf *ib, struct buf *ob,
+static Rboolean render_to_html(hoedown_buffer *ib, hoedown_buffer *ob,
                                   SEXP Soptions, SEXP Sextensions)
 {
-   struct sd_callbacks callbacks;
-   struct html_renderopt renderopt;
-   unsigned int exts=0, options=0;
-   struct sd_markdown *markdown;
-   struct buf *htmlbuf;
+   hoedown_renderer *hd_renderer = NULL;
+   hoedown_extensions extensions = 0;
+   hoedown_html_flags renderflags = 0;
+   hoedown_document *markdown = NULL;
+   hoedown_buffer *htmlbuf = NULL;
    Rboolean toc = FALSE, smarty = FALSE;
 
    /* Marshal extensions */
@@ -35,33 +35,48 @@ static Rboolean render_to_html(struct buf *ib, struct buf *ob,
       int i;
       for (i = 0; i < LENGTH(Sextensions); i++)
       {
-         if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "NO_INTRA_EMPHASIS") == 0)
-            exts |= MKDEXT_NO_INTRA_EMPHASIS;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+        if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "TABLES") == 0)
-            exts |= MKDEXT_TABLES;
+            extensions |= HOEDOWN_EXT_TABLES;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "FENCED_CODE") == 0)
-            exts |= MKDEXT_FENCED_CODE;
+            extensions |= HOEDOWN_EXT_FENCED_CODE;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "FOOTNOTES") == 0)
+           extensions |= HOEDOWN_EXT_FOOTNOTES;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "AUTOLINK") == 0)
-            exts |= MKDEXT_AUTOLINK;
+            extensions |= HOEDOWN_EXT_AUTOLINK;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "STRIKETHROUGH") == 0)
-            exts |= MKDEXT_STRIKETHROUGH;
+            extensions |= HOEDOWN_EXT_STRIKETHROUGH;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "LAX_SPACING") == 0)
-            exts |= MKDEXT_LAX_SPACING;
+                             "UNDERLINE") == 0)
+           extensions |= HOEDOWN_EXT_UNDERLINE;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "HIGHLIGHT") == 0)
+           extensions |= HOEDOWN_EXT_HIGHLIGHT;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "QUOTE") == 0)
+           extensions |= HOEDOWN_EXT_QUOTE;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "NO_INTRA_EMPHASIS") == 0)
+           extensions |= HOEDOWN_EXT_NO_INTRA_EMPHASIS;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "MATH_EXPLICIT") == 0)
+           extensions |= HOEDOWN_EXT_MATH_EXPLICIT;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "SPACE_HEADERS") == 0)
-            exts |= MKDEXT_SPACE_HEADERS;
+            extensions |= HOEDOWN_EXT_SPACE_HEADERS;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                         "SUPERSCRIPT") == 0)
-            exts |= MKDEXT_SUPERSCRIPT;
+            extensions |= HOEDOWN_EXT_SUPERSCRIPT;
          else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "LATEX_MATH") == 0)
-            exts |= MKDEXT_LATEX_MATH;
+                        "MATH") == 0)
+            extensions |= HOEDOWN_EXT_MATH;
+         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "DISABLE_INDENTED_CODE") == 0)
+           extensions |= HOEDOWN_EXT_DISABLE_INDENTED_CODE;
       }
    }
 
@@ -73,116 +88,103 @@ static Rboolean render_to_html(struct buf *ib, struct buf *ob,
       {
          if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
                         "SKIP_HTML") == 0)
-            options |= HTML_SKIP_HTML;
+            renderflags |= HOEDOWN_HTML_SKIP_HTML;
          else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "SKIP_STYLE") == 0)
-            options |= HTML_SKIP_STYLE;
-         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "SKIP_IMAGES") == 0)
-            options |= HTML_SKIP_IMAGES;
-         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "SKIP_LINKS") == 0)
-            options |= HTML_SKIP_LINKS;
-         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "SAFELINK") == 0)
-            options |= HTML_SAFELINK;
-         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "TOC") == 0)
-         {
-            options |= HTML_TOC;
-            toc = TRUE;
-         }
+                             "ESCAPE") == 0)
+           renderflags |= HOEDOWN_HTML_ESCAPE;
          else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
                         "HARD_WRAP") == 0)
-            options |= HTML_HARD_WRAP;
+            renderflags |= HOEDOWN_HTML_HARD_WRAP;
          else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
                         "USE_XHTML") == 0)
-            options |= HTML_USE_XHTML;
-         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
-                        "ESCAPE") == 0)
-            options |= HTML_ESCAPE;
+            renderflags |= HOEDOWN_HTML_USE_XHTML;
          else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
                         "SMARTYPANTS") == 0)
             smarty = TRUE;
+         else if (strcasecmp(CHAR(STRING_ELT(Soptions,i)),
+                             "TOC") == 0)
+         {
+           toc = TRUE;
+         }
       }
    }
 
-   htmlbuf = bufnew(OUTPUT_UNIT);
+   htmlbuf = hoedown_buffer_new(OUTPUT_UNIT);
    if (!htmlbuf)
    {
-      RMD_WARNING_NOMEM;
+      RHD_WARNING_NOMEM;
       return FALSE;
    }
 
    if (toc==TRUE)
    {
-      struct buf *tocbuf = bufnew(OUTPUT_UNIT);
+      hoedown_buffer *tocbuf = hoedown_buffer_new(OUTPUT_UNIT);
 
       if (!tocbuf)
       {
-         RMD_WARNING_NOMEM;
+         RHD_WARNING_NOMEM;
          return FALSE;
       }
 
-      sdhtml_toc_renderer(&callbacks, &renderopt);
-      markdown = sd_markdown_new(exts,16,&callbacks,(void *)&renderopt);
+      hd_renderer = hoedown_html_toc_renderer_new(16);
+      markdown = hoedown_document_new(hd_renderer, extensions, 16);
       if (!markdown)
       {
-         RMD_WARNING_NOMEM;
+         RHD_WARNING_NOMEM;
          return FALSE;
       }
       
-      sd_markdown_render(tocbuf, ib->data, ib->size, markdown);
-      sd_markdown_free(markdown);
+      hoedown_document_render(markdown, tocbuf, ib->data, ib->size);
+      hoedown_document_free(markdown);
 
-      bufputs(htmlbuf,"<div id=\"toc\">\n");
-      bufputs(htmlbuf,"<div id=\"toc_header\">Table of Contents</div>\n");
-      bufput(htmlbuf,tocbuf->data,tocbuf->size);
-      bufputs(htmlbuf,"</div>\n");
-      bufputs(htmlbuf,"\n");
-      bufrelease(tocbuf);
+      hoedown_buffer_puts(htmlbuf,"<div id=\"toc\">\n");
+      hoedown_buffer_puts(htmlbuf,"<div id=\"toc_header\">Table of Contents</div>\n");
+      hoedown_buffer_put(htmlbuf,tocbuf->data,tocbuf->size);
+      hoedown_buffer_puts(htmlbuf,"</div>\n");
+      hoedown_buffer_puts(htmlbuf,"\n");
+      hoedown_buffer_free(tocbuf);
    }
 
-   sdhtml_renderer(&callbacks, &renderopt, options);
+   hd_renderer = hoedown_html_renderer_new(renderflags, 16);
 
-   markdown = sd_markdown_new(exts,16,&callbacks,(void *)&renderopt);
+   markdown = hoedown_document_new(hd_renderer, extensions, 16);
    if (!markdown)
    {
-      RMD_WARNING_NOMEM;
+      RHD_WARNING_NOMEM;
       return FALSE;
    }
 
-   sd_markdown_render(htmlbuf, ib->data, ib->size, markdown);
+   hoedown_document_render(markdown, htmlbuf, ib->data, ib->size);
 
-   sd_markdown_free(markdown);
+   hoedown_document_free(markdown);
 
    if (smarty==TRUE)
    {
-      struct buf *smartybuf = bufnew(OUTPUT_UNIT);
+      hoedown_buffer *smartybuf = hoedown_buffer_new(OUTPUT_UNIT);
       if (!smartybuf)
       {
-         RMD_WARNING_NOMEM;
+         RHD_WARNING_NOMEM;
          return FALSE;
       }
-      sdhtml_smartypants(smartybuf,htmlbuf->data,htmlbuf->size);
-      bufrelease(htmlbuf);
+      hoedown_html_smartypants(smartybuf,htmlbuf->data,htmlbuf->size);
+      hoedown_buffer_free(htmlbuf);
       htmlbuf = smartybuf;
    }
 
-   bufput(ob,htmlbuf->data,htmlbuf->size);
+   hoedown_buffer_put(ob,htmlbuf->data,htmlbuf->size);
 
-   bufrelease(htmlbuf);
+   hoedown_buffer_free(htmlbuf);
 
    return TRUE;
 }
 
-void rmd_init_renderer_list()
+void rhd_init_renderer_list()
 {
    int i;
-   struct rmd_renderer *html;
+   struct rhd_renderer *html;
    for (i=0;i<NREND;i++)
    {
-      memset(&RENDERERS[i],0,sizeof(struct rmd_renderer));
+      memset(&RENDERERS[i],0,sizeof(struct rhd_renderer));
    }
 
    /* Add HTML renderer */
@@ -192,12 +194,12 @@ void rmd_init_renderer_list()
    html->output_type = "character";
 }
 
-Rboolean rmd_renderer_exists(const char *name)
+Rboolean rhd_renderer_exists(const char *name)
 {
    return (renderer(name) != NULL)? TRUE: FALSE;
 }
 
-Rboolean rmd_register_renderer(struct rmd_renderer *renderer)
+Rboolean rhd_register_renderer(struct rhd_renderer *renderer)
 {
    int i, empty_slot = -1, name_exists = -1;
 
@@ -238,7 +240,7 @@ Rboolean rmd_register_renderer(struct rmd_renderer *renderer)
    return TRUE;
 }
 
-SEXP rmd_registered_renderers(void)
+SEXP rhd_registered_renderers(void)
 {
    SEXP ans;
    SEXP names;
@@ -270,7 +272,7 @@ SEXP rmd_registered_renderers(void)
    return ans;
 }
 
-static struct rmd_renderer *renderer(const char *name)
+static struct rhd_renderer *renderer(const char *name)
 {
    int i;
    for (i=0;i<NREND;i++)
@@ -283,7 +285,7 @@ static struct rmd_renderer *renderer(const char *name)
    return NULL;
 }
 
-Rboolean rmd_input_to_buf(SEXP Sfile, SEXP Stext, struct buf *ib)
+Rboolean rhd_input_to_buf(SEXP Sfile, SEXP Stext, hoedown_buffer *ib)
 {
    /* Setup input buffer */
    if (isNull(Sfile))
@@ -293,8 +295,8 @@ Rboolean rmd_input_to_buf(SEXP Sfile, SEXP Stext, struct buf *ib)
       len = strlen(text);
       if (len > 0)
       {
-         bufgrow(ib,len);
-         bufput(ib,(const void *)text,len);
+         hoedown_buffer_grow(ib,len);
+         hoedown_buffer_put(ib,(const void *)text,len);
       }
       else
       {
@@ -314,11 +316,11 @@ Rboolean rmd_input_to_buf(SEXP Sfile, SEXP Stext, struct buf *ib)
          warning("Cannot open %s!", file);
          return FALSE;
       }
-      bufgrow(ib, READ_UNIT);
+      hoedown_buffer_grow(ib, READ_UNIT);
       while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size,
                           in)) > 0) {
          ib->size += ret;
-         bufgrow(ib, ib->size + READ_UNIT);
+         hoedown_buffer_grow(ib, ib->size + READ_UNIT);
       }
       fclose(in);
    }
@@ -326,7 +328,7 @@ Rboolean rmd_input_to_buf(SEXP Sfile, SEXP Stext, struct buf *ib)
    return TRUE;
 }
 
-Rboolean rmd_buf_to_output(struct buf *ob, SEXP Soutput, SEXP *raw_vec)
+Rboolean rhd_buf_to_output(hoedown_buffer *ob, SEXP Soutput, SEXP *raw_vec)
 {
    /* Output */
    if (isNull(Soutput))
@@ -363,7 +365,7 @@ Rboolean rmd_buf_to_output(struct buf *ob, SEXP Soutput, SEXP *raw_vec)
  * and date. Both 'title' and 'author' can extend to multiple lines so
  * long as that line starts with a space, but 'date' cannot.
  */
-void skip_pandoc_title_block(struct buf *ib){
+void skip_pandoc_title_block(hoedown_buffer *ib){
 	int i = 0;
    size_t pos = 0;
 
@@ -396,14 +398,14 @@ void skip_pandoc_title_block(struct buf *ib){
    /* If we've seen a title block, we'll take it off
     * the beginning of our buffer by slurping up pos bytes.
     */
-   if (pos > 0) bufslurp(ib,pos);
+   if (pos > 0) hoedown_buffer_slurp(ib,pos);
 }
 
 /* Jekyll front matter begins on the first line and the first three characters
  * of the line are '---'. Front matter ends when a line is started with '---'.
  * We skip everything in between including the ending '---'.
  */
-void skip_jekyll_front_matter(struct buf *ib){
+void skip_jekyll_front_matter(hoedown_buffer *ib){
    int front_matter_found = 0;
    size_t pos = 0;
 
@@ -429,55 +431,55 @@ void skip_jekyll_front_matter(struct buf *ib){
    } while(1);
 
    if (front_matter_found && pos > 0)
-      bufslurp(ib,pos);
+      hoedown_buffer_slurp(ib,pos);
 }
 
-SEXP rmd_render_markdown(SEXP Sfile, SEXP Soutput, SEXP Stext, SEXP Srenderer,
+SEXP rhd_render_markdown(SEXP Sfile, SEXP Soutput, SEXP Stext, SEXP Srenderer,
                             SEXP Soptions, SEXP Sextensions)
 {
    const char *name;
-   struct buf *ib, *ob;
+   hoedown_buffer *ib, *ob;
    SEXP ret_val = R_NilValue;
    Rboolean success;
 
    name = CHAR(STRING_ELT(Srenderer,0));
 
-   if (!rmd_renderer_exists(name))
+   if (!rhd_renderer_exists(name))
    {
       error("Renderer '%s' not registered!",name);
       return R_NilValue;
    }
 
-   ib = bufnew(READ_UNIT);
+   ib = hoedown_buffer_new(READ_UNIT);
    if (!ib)
       error("Out of memory!");
 
-   success = rmd_input_to_buf(Sfile,Stext,ib);
+   success = rhd_input_to_buf(Sfile,Stext,ib);
    if (!success)
    {
-      bufrelease(ib);
+      hoedown_buffer_free(ib);
       error("Input error!");
    }
 
    skip_pandoc_title_block(ib);
    skip_jekyll_front_matter(ib);
 
-   ob = bufnew(OUTPUT_UNIT);
+   ob = hoedown_buffer_new(OUTPUT_UNIT);
    if (!ob)
       error("Out of memory!");
 
    success = renderer(name)->render(ib,ob,Soptions,Sextensions);
    if (!success)
    {
-      bufrelease(ib);
-      bufrelease(ob);
+      hoedown_buffer_free(ib);
+      hoedown_buffer_free(ob);
       error("Render error!");
    }
 
-   success = rmd_buf_to_output(ob,Soutput,&ret_val);
+   success = rhd_buf_to_output(ob,Soutput,&ret_val);
 
-   bufrelease(ib);
-   bufrelease(ob);
+   hoedown_buffer_free(ib);
+   hoedown_buffer_free(ob);
 
    if (!success)
       error("Output error!");
@@ -485,34 +487,34 @@ SEXP rmd_render_markdown(SEXP Sfile, SEXP Soutput, SEXP Stext, SEXP Srenderer,
    return ret_val;
 }
 
-SEXP rmd_render_smartypants(SEXP Sfile, SEXP Soutput, SEXP Stext)
+SEXP rhd_render_smartypants(SEXP Sfile, SEXP Soutput, SEXP Stext)
 {
-   struct buf *ib, *ob;
+   hoedown_buffer *ib, *ob;
    SEXP ret_val = R_NilValue;
    Rboolean success;
 
-   ib = bufnew(READ_UNIT);
+   ib = hoedown_buffer_new(READ_UNIT);
    if (!ib)
       error("Out of memory!");
 
-   success = rmd_input_to_buf(Sfile, Stext, ib);
+   success = rhd_input_to_buf(Sfile, Stext, ib);
 
    if (!success)
    {
-      bufrelease(ib);
+      hoedown_buffer_free(ib);
       error("Input error!");
    }
 
-   ob = bufnew(OUTPUT_UNIT);
+   ob = hoedown_buffer_new(OUTPUT_UNIT);
    if (!ob)
       error("Out of memory!");
 
-   sdhtml_smartypants(ob,ib->data,ib->size);
+   hoedown_html_smartypants(ob,ib->data,ib->size);
 
-   success = rmd_buf_to_output(ob,Soutput,&ret_val);
+   success = rhd_buf_to_output(ob,Soutput,&ret_val);
 
-   bufrelease(ib);
-   bufrelease(ob);
+   hoedown_buffer_free(ib);
+   hoedown_buffer_free(ob);
 
    if (!success)
       error("Output error!");
