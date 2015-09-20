@@ -509,9 +509,30 @@ smartypants <- function(file, output, text) {
 #' options(markdown.extensions = NULL)
 #'
 #' @example inst/examples/markdownExtensions.R
-markdownExtensions <- function()
-  c('no_intra_emphasis', 'tables', 'fenced_code', 'autolink', 'strikethrough',
-    'space_headers', 'superscript', 'latex_math')
+
+markdownExtensions <- function(defaults = TRUE) {
+  all.extensions = c( #block-level
+    'tables', 'fenced_code', 'footnotes',
+    # span-level
+    'autolink', 'strikethrough', 'underline', 'highlight',
+    'quote', 'superscript', 'subscript',
+    'math',
+    # other
+    'math_explicit',
+    'no_intra_emphasis', 'space_headers',
+    # negative
+    'disable_indented_code'
+  )
+  if (defaults) {
+    c('tables', 'fenced_code', 'autolink',
+      'superscript', 'subscript',
+      'math', 'math_expliciit',
+      'space_headers',
+      'no_intra_emphasis')
+  } else {
+    all.extensions
+  }
+}
 
 # HTML renderer options.
 #
@@ -621,11 +642,11 @@ markdownExtensions <- function()
 #' @example inst/examples/HTMLOptions.R
 markdownHTMLOptions <- function(defaults = FALSE) {
   allOptions <- c(
-    'skip_html', 'skip_style', 'skip_images', 'skip_links', 'safelink', 'toc',
+    'skip_html', 'toc',
     'escape', 'fragment_only', 'hard_wrap', 'use_xhtml', 'smartypants',
     'base64_images', 'mathjax', 'highlight_code'
   )
-  if (defaults) allOptions[10:14] else allOptions
+  if (defaults) tail(allOptions,5) else allOptions
 }
 
 .onLoad <- function(libname, pkgname) {
