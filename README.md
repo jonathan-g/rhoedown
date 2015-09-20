@@ -1,7 +1,7 @@
 Markdown rendering for R
 =============================================================================
 
-[![Build Status](https://travis-ci.org/jonathan-g/rhoedown)](https://travis-ci.org/jonathan-g/rhoedown)
+[![Build Status](https://travis-ci.org/jonathan-g/rhoedown.svg)](https://travis-ci.org/jonathan-g/rhoedown)
 
 Overview
 -----------------------------------------------------------------------------
