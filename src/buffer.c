@@ -1,3 +1,5 @@
+#include <R.h>
+
 #include "buffer.h"
 
 #include <stdio.h>
@@ -11,8 +13,9 @@ hoedown_malloc(size_t size)
 	void *ret = malloc(size);
 
 	if (!ret) {
-		fprintf(stderr, "Allocation failed.\n");
-		abort();
+		// fprintf(stderr, "Allocation failed.\n");
+		// abort();
+		error("Allocation failed.");
 	}
 
 	return ret;
@@ -24,8 +27,9 @@ hoedown_calloc(size_t nmemb, size_t size)
 	void *ret = calloc(nmemb, size);
 
 	if (!ret) {
-		fprintf(stderr, "Allocation failed.\n");
-		abort();
+		// fprintf(stderr, "Allocation failed.\n");
+		// abort();
+		error("Allocation failed.");
 	}
 
 	return ret;
@@ -37,8 +41,9 @@ hoedown_realloc(void *ptr, size_t size)
 	void *ret = realloc(ptr, size);
 
 	if (!ret) {
-		fprintf(stderr, "Allocation failed.\n");
-		abort();
+		// fprintf(stderr, "Allocation failed.\n");
+		// abort();
+		error("Allocation failed.");
 	}
 
 	return ret;

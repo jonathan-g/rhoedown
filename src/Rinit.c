@@ -27,7 +27,7 @@ static R_CallMethodDef CallEntries[] = {
    {NULL,NULL,0}
 };
 
-void R_init_markdown(DllInfo *dll)
+void R_init_rhoedown(DllInfo *dll)
 {
    R_registerRoutines(dll,NULL,CallEntries, NULL, NULL);
    R_useDynamicSymbols(dll, FALSE);
@@ -35,7 +35,7 @@ void R_init_markdown(DllInfo *dll)
    rhd_init_renderer_list();
 
    /* Callable functions from other packages' C code */
-#define RREGDEF(name) R_RegisterCCallable("markdown", #name, (DL_FUNC) name)
+#define RREGDEF(name) R_RegisterCCallable("rhoedown", #name, (DL_FUNC) name)
    RREGDEF(hoedown_buffer_cstr);
    RREGDEF(hoedown_buffer_free);
    RREGDEF(hoedown_buffer_grow);

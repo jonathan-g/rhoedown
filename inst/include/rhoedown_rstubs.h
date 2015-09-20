@@ -100,8 +100,8 @@ rstub_hoedown_document_free(struct hoedown_document *doc);
 #define hoedown_document_free rstub_hoedown_document_free
 
 extern void
-rstub_sd_version(int *major, int *minor, int *revision);
-#define sd_version rstub_sd_version
+rstub_hoedown_version(int *major, int *minor, int *revision);
+#define hoedown_version rstub_hoedown_version
 
 struct rhd_renderer {
    char *name;

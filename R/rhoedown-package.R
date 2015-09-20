@@ -21,6 +21,6 @@
 #'
 #'   Maintainer: Jonathan Gilligan  <jonathan.gilligan@@gmail.com>
 #' @seealso \code{\link{markdownToHTML}} \code{\link{renderMarkdown}}
-#' @useDynLib hoedown, .registration = TRUE
+#' @useDynLib rhoedown, .registration = TRUE
 #' @keywords package
 NULL
