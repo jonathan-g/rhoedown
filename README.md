@@ -18,7 +18,9 @@ The package also exports the underlying Hoedown C extension API which
 enables creating and calling custom renderers using the `renderMarkdown`
 function.
 
-To learn more about markdown syntax see: <http://en.wikipedia.org/wiki/Markdown>
+To learn more about markdown syntax see: <http://en.wikipedia.org/wiki/Markdown> 
+
+This package is adapted from the [markdown](https://github.com/rstudio/markdown) package written by JJ Allaire and others at RStudio.
 
 License
 -----------------------------------------------------------------------------
