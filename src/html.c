@@ -488,6 +488,17 @@ rndr_superscript(hoedown_buffer *ob, const hoedown_buffer *content, const hoedow
 	return 1;
 }
 
+static int
+  rndr_subscript(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+  {
+    if (!content || !content->size) return 0;
+    HOEDOWN_BUFPUTSL(ob, "<sub>");
+    hoedown_buffer_put(ob, content->data, content->size);
+    HOEDOWN_BUFPUTSL(ob, "</sub>");
+    return 1;
+  }
+
+
 static void
 rndr_normal_text(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
 {
@@ -651,6 +662,7 @@ hoedown_html_toc_renderer_new(int nesting_level)
 		rndr_triple_emphasis,
 		rndr_strikethrough,
 		rndr_superscript,
+		rndr_subscript,
 		NULL,
 		NULL,
 		NULL,
@@ -714,6 +726,7 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level)
 		rndr_triple_emphasis,
 		rndr_strikethrough,
 		rndr_superscript,
+		rndr_subscript,
 		rndr_footnote_ref,
 		rndr_math,
 		rndr_raw_html,

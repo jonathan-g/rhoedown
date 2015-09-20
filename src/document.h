@@ -28,7 +28,8 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_HIGHLIGHT = (1 << 6),
 	HOEDOWN_EXT_QUOTE = (1 << 7),
 	HOEDOWN_EXT_SUPERSCRIPT = (1 << 8),
-	HOEDOWN_EXT_MATH = (1 << 9),
+  HOEDOWN_EXT_SUBSCRIPT = (1 << 9),  
+	HOEDOWN_EXT_MATH = (1 << 10),
 
 	/* other flags */
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS = (1 << 11),
@@ -39,6 +40,11 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_DISABLE_INDENTED_CODE = (1 << 14)
 } hoedown_extensions;
 
+  
+#define HOEDOWN_EXT_LATEX_MATH (                               \
+  HOEDOWN_EXT_MATH |\
+  HOEDOWN_EXT_MATH_EXPLICIT )
+  
 #define HOEDOWN_EXT_BLOCK (\
 	HOEDOWN_EXT_TABLES |\
 	HOEDOWN_EXT_FENCED_CODE |\
@@ -129,6 +135,7 @@ struct hoedown_renderer {
 	int (*triple_emphasis)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*strikethrough)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*superscript)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
+	int (*subscript)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*footnote_ref)(hoedown_buffer *ob, unsigned int num, const hoedown_renderer_data *data);
 	int (*math)(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data);
 	int (*raw_html)(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data);

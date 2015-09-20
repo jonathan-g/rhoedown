@@ -36,47 +36,57 @@ static Rboolean render_to_html(hoedown_buffer *ib, hoedown_buffer *ob,
       for (i = 0; i < LENGTH(Sextensions); i++)
       {
         if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "TABLES") == 0)
-            extensions |= HOEDOWN_EXT_TABLES;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "FENCED_CODE") == 0)
-            extensions |= HOEDOWN_EXT_FENCED_CODE;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "FOOTNOTES") == 0)
-           extensions |= HOEDOWN_EXT_FOOTNOTES;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "AUTOLINK") == 0)
-            extensions |= HOEDOWN_EXT_AUTOLINK;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "STRIKETHROUGH") == 0)
-            extensions |= HOEDOWN_EXT_STRIKETHROUGH;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "UNDERLINE") == 0)
-           extensions |= HOEDOWN_EXT_UNDERLINE;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "HIGHLIGHT") == 0)
-           extensions |= HOEDOWN_EXT_HIGHLIGHT;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "QUOTE") == 0)
-           extensions |= HOEDOWN_EXT_QUOTE;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "NO_INTRA_EMPHASIS") == 0)
-           extensions |= HOEDOWN_EXT_NO_INTRA_EMPHASIS;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "MATH_EXPLICIT") == 0)
-           extensions |= HOEDOWN_EXT_MATH_EXPLICIT;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "SPACE_HEADERS") == 0)
-            extensions |= HOEDOWN_EXT_SPACE_HEADERS;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "SUPERSCRIPT") == 0)
-            extensions |= HOEDOWN_EXT_SUPERSCRIPT;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                        "MATH") == 0)
-            extensions |= HOEDOWN_EXT_MATH;
-         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "DISABLE_INDENTED_CODE") == 0)
-           extensions |= HOEDOWN_EXT_DISABLE_INDENTED_CODE;
+                       "AUTOLINK") == 0)
+          extensions |= HOEDOWN_EXT_AUTOLINK;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "DISABLE_INDENTED_CODE") == 0)
+          extensions |= HOEDOWN_EXT_DISABLE_INDENTED_CODE;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "FENCED_CODE") == 0)
+          extensions |= HOEDOWN_EXT_FENCED_CODE;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "FOOTNOTES") == 0)
+          extensions |= HOEDOWN_EXT_FOOTNOTES;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "HIGHLIGHT") == 0)
+          extensions |= HOEDOWN_EXT_HIGHLIGHT;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "MATH") == 0)
+          extensions |= HOEDOWN_EXT_MATH;
+        else if ((strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "MATH_EXPLICIT") == 0) || 
+                 (strcasecmp(CHAR(STRING_ELT(Sextensions, i)),
+                             "MATH-EXPLICIT") == 0))
+          extensions |= HOEDOWN_EXT_MATH_EXPLICIT;
+        else if ((strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "LATEX-MATH") == 0) || 
+                               (strcasecmp(CHAR(STRING_ELT(Sextensions, i)),
+                                           "LATEX_MATH") == 0))
+          extensions |= HOEDOWN_EXT_LATEX_MATH;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "NO_INTRA_EMPHASIS") == 0)
+          extensions |= HOEDOWN_EXT_NO_INTRA_EMPHASIS;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "QUOTE") == 0)
+          extensions |= HOEDOWN_EXT_QUOTE;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "SPACE_HEADERS") == 0)
+          extensions |= HOEDOWN_EXT_SPACE_HEADERS;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "STRIKETHROUGH") == 0)
+          extensions |= HOEDOWN_EXT_STRIKETHROUGH;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "SUPERSCRIPT") == 0)
+          extensions |= HOEDOWN_EXT_SUPERSCRIPT;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "SUBSCRIPT") == 0)
+          extensions |= HOEDOWN_EXT_SUBSCRIPT;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                              "TABLES") == 0)
+          extensions |= HOEDOWN_EXT_TABLES;
+        else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                            "UNDERLINE") == 0)
+          extensions |= HOEDOWN_EXT_UNDERLINE;
       }
    }
 

@@ -84,7 +84,7 @@ When \code{FALSE}, \code{markdownToHTML} creates well-formed stand-alone HTML
 pages complete with HTML header, title, and body tags. The default template
 used for this mode may be found here:
 
-\code{system.file('resources', 'markdown.html', package = 'markdown')}
+\code{system.file('resources', 'markdown.html', package = 'rhoedown')}
 
 Also, \code{markdownToHTML} will automatically determine whether or not
 mathjax and R code highlighting are needed and will include the appropriate

@@ -66,3 +66,4 @@ cat(markdownToHTML(text = "#Not A Header\nbecause there is no space between # an
 # superscript example
 cat(markdownToHTML(text = "2^10", extensions = c()))
 cat(markdownToHTML(text = "2^10", extensions = c("superscript")))
+cat(markdownToHTML(text = "2~10", extensions = c("subscript")))

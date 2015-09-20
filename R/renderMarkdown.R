@@ -185,7 +185,7 @@ renderMarkdown <- function(
   function(embed=FALSE, force=FALSE) {
     if (!embed)
       return(paste(readLines(system.file(
-        'resources', 'mathjax.html', package = 'markdown'
+        'resources', 'mathjax.html', package = 'rhoedown'
       )), collapse = '\n'))
 
     # http://docs.mathjax.org/en/latest/start.html
@@ -250,7 +250,7 @@ renderMarkdown <- function(
 #' pages complete with HTML header, title, and body tags. The default template
 #' used for this mode may be found here:
 #'
-#' \code{system.file('resources', 'markdown.html', package = 'markdown')}
+#' \code{system.file('resources', 'markdown.html', package = 'rhoedown')}
 #'
 #' Also, \code{markdownToHTML} will automatically determine whether or not
 #' mathjax and R code highlighting are needed and will include the appropriate
@@ -323,7 +323,7 @@ markdownToHTML <- function(
 
   if (!'fragment_only' %in% options) {
     if (is.null(template))
-      template <- system.file('resources', 'markdown.html', package = 'markdown')
+      template <- system.file('resources', 'markdown.html', package = 'rhoedown')
     html <- paste(readLines(template), collapse = '\n')
     html <- sub('#!html_output#', if (length(ret)) ret else '', html, fixed = TRUE)
 
@@ -357,7 +357,7 @@ markdownToHTML <- function(
 
     if ('highlight_code' %in% options && .requiresHighlighting(html)) {
       highlight <- paste(readLines(system.file(
-        'resources', 'r_highlight.html', package = 'markdown'
+        'resources', 'r_highlight.html', package = 'rhoedown'
       )), collapse = '\n')
     } else highlight <- ''
     html <- sub('#!r_highlight#', highlight, html, fixed = TRUE)
@@ -511,7 +511,7 @@ smartypants <- function(file, output, text) {
 #' @example inst/examples/markdownExtensions.R
 markdownExtensions <- function()
   c('no_intra_emphasis', 'tables', 'fenced_code', 'autolink', 'strikethrough',
-    'lax_spacing', 'space_headers', 'superscript', 'latex_math')
+    'space_headers', 'superscript', 'latex_math')
 
 # HTML renderer options.
 #
@@ -637,7 +637,7 @@ markdownHTMLOptions <- function(defaults = FALSE) {
     options(markdown.HTML.options = markdownHTMLOptions(defaults = TRUE))
 
   if (is.null(getOption('markdown.HTML.stylesheet'))) {
-    sheet <- system.file('resources', 'markdown.css', package = 'markdown')
+    sheet <- system.file('resources', 'markdown.css', package = 'rhoedown')
     options(markdown.HTML.stylesheet = sheet)
   }
 }
