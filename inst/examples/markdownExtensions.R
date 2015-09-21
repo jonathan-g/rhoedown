@@ -1,6 +1,6 @@
 # The following examples are short, so we set the HTML option 'fragment_only'
 
-options(markdown.HTML.options = "fragment_only")
+options(rhoedown.HTML.options = "fragment_only")
 
 # no_intra_emphasis example
 cat(markdownToHTML(text = "foo_bar_function", extensions = c()))

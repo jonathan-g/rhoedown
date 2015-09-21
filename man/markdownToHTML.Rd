@@ -5,11 +5,11 @@
 \title{Render markdown to HTML}
 \usage{
 markdownToHTML(file, output = NULL, text = NULL,
-  options = getOption("markdown.HTML.options"),
-  extensions = getOption("markdown.extensions"), title = "",
-  stylesheet = getOption("markdown.HTML.stylesheet"),
-  header = getOption("markdown.HTML.header"),
-  template = getOption("markdown.HTML.template"), fragment.only = FALSE,
+  options = getOption("rhoedown.HTML.options"),
+  extensions = getOption("rhoedown.extensions"), title = "",
+  stylesheet = getOption("rhoedown.HTML.stylesheet"),
+  header = getOption("rhoedown.HTML.header"),
+  template = getOption("rhoedown.HTML.template"), fragment.only = FALSE,
   encoding = getOption("encoding"))
 }
 \arguments{

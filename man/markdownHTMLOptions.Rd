@@ -28,11 +28,11 @@ globally in the \pkg{markdown} package, simply place some or all of them in a
 character vector and assign to the global option \code{markdown.HTML.options}
 like so:
 
-\code{options(markdown.HTML.options = markdownHTMLOptions())}
+\code{options(rhoedown.HTML.options = markdownHTMLOptions())}
 
 To reset the options to package default, use:
 
-\code{options(markdown.HTML.options = markdownHTMLOptions(default = TRUE))}
+\code{options(rhoedown.HTML.options = markdownHTMLOptions(default = TRUE))}
 
 To override the global option, pass the \code{options} as an argument:
 
@@ -90,13 +90,13 @@ See the EXAMPLES section to see the output of each option turned on or off.
 markdownHTMLOptions()
 
 # To turn on all HTML options globally:
-options(markdown.HTML.options = markdownHTMLOptions())
+options(rhoedown.HTML.options = markdownHTMLOptions())
 
 # To turn off all HTML options globally:
-options(markdown.HTML.options = NULL)
+options(rhoedown.HTML.options = NULL)
 
 # To turn on package default HTML options globally:
-options(markdown.HTML.options = markdownHTMLOptions(default = TRUE))
+options(rhoedown.HTML.options = markdownHTMLOptions(default = TRUE))
 # HTML OPTIONS
 
 # The following examples are short, so we allways add the HTML option 'fragment_only'

@@ -5,7 +5,7 @@
 \title{Render markdown to an HTML fragment}
 \usage{
 renderMarkdown(file, output = NULL, text = NULL, renderer = "HTML",
-  renderer.options = NULL, extensions = getOption("markdown.extensions"),
+  renderer.options = NULL, extensions = getOption("rhoedown.extensions"),
   encoding = getOption("encoding"))
 }
 \arguments{

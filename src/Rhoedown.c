@@ -1,8 +1,8 @@
 /*
  * Rmarkdown.c
- * 
+ *
  * Copyright (C) 2009-2013 by RStudio, Inc.
- * 
+ *
  * This program is licensed to you under the terms of version 2 of the
  * GNU General Public License. This program is distributed WITHOUT ANY
  * EXPRESS OR IMPLIED WARRANTY, INCLUDING THOSE OF NON-INFRINGEMENT,
@@ -50,16 +50,16 @@ static Rboolean render_to_html(hoedown_buffer *ib, hoedown_buffer *ob,
         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                             "HIGHLIGHT") == 0)
           extensions |= HOEDOWN_EXT_HIGHLIGHT;
+        else if ((strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
+                             "MATH_EXPLICIT") == 0) ||
+                               (strcasecmp(CHAR(STRING_ELT(Sextensions, i)),
+                                           "MATH-EXPLICIT") == 0))
+          extensions |= HOEDOWN_EXT_MATH_EXPLICIT;
         else if (strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
                             "MATH") == 0)
           extensions |= HOEDOWN_EXT_MATH;
         else if ((strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                            "MATH_EXPLICIT") == 0) || 
-                 (strcasecmp(CHAR(STRING_ELT(Sextensions, i)),
-                             "MATH-EXPLICIT") == 0))
-          extensions |= HOEDOWN_EXT_MATH_EXPLICIT;
-        else if ((strcasecmp(CHAR(STRING_ELT(Sextensions,i)),
-                             "LATEX-MATH") == 0) || 
+                             "LATEX-MATH") == 0) ||
                                (strcasecmp(CHAR(STRING_ELT(Sextensions, i)),
                                            "LATEX_MATH") == 0))
           extensions |= HOEDOWN_EXT_LATEX_MATH;
@@ -143,7 +143,7 @@ static Rboolean render_to_html(hoedown_buffer *ib, hoedown_buffer *ob,
          RHD_WARNING_NOMEM;
          return FALSE;
       }
-      
+
       hoedown_document_render(markdown, tocbuf, ib->data, ib->size);
       hoedown_document_free(markdown);
 
@@ -254,7 +254,7 @@ SEXP rhd_registered_renderers(void)
 {
    SEXP ans;
    SEXP names;
-   char *name, *output_type; 
+   char *name, *output_type;
    int i;
 
    PROTECT(ans = allocVector(STRSXP,NREND));
@@ -313,7 +313,7 @@ Rboolean rhd_input_to_buf(SEXP Sfile, SEXP Stext, hoedown_buffer *ib)
          warning("Input text is zero length!");
          return FALSE;
       }
-   } 
+   }
    else
    {
       FILE *in;
@@ -371,7 +371,7 @@ Rboolean rhd_buf_to_output(hoedown_buffer *ob, SEXP Soutput, SEXP *raw_vec)
 }
 
 /* Pandoc title blocks are prepended with percents '%'. They start on the
- * first line of the document and contain 3 elements: 'title','author', 
+ * first line of the document and contain 3 elements: 'title','author',
  * and date. Both 'title' and 'author' can extend to multiple lines so
  * long as that line starts with a space, but 'date' cannot.
  */
@@ -393,7 +393,7 @@ void skip_pandoc_title_block(hoedown_buffer *ib){
 
       do {
          /* Only title and author can contain continuation lines,
-          * e.g. i < 2 
+          * e.g. i < 2
           */
          if (ib->data[pos] == ' ' && i < 2){
             while (pos < ib->size && ib->data[pos] != '\n') pos++;
@@ -420,7 +420,7 @@ void skip_jekyll_front_matter(hoedown_buffer *ib){
    size_t pos = 0;
 
    /* Jekyll 0.12.0 expects front matter to start on the first line */
-   if (ib->size < 3 || !(ib->data[0] == '-' && ib->data[1] == '-' && 
+   if (ib->size < 3 || !(ib->data[0] == '-' && ib->data[1] == '-' &&
       ib->data[2] == '-') ) return;
 
    pos = 3;

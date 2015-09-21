@@ -4,7 +4,10 @@
 \alias{markdownExtensions}
 \title{Markdown extensions}
 \usage{
-markdownExtensions()
+markdownExtensions(defaults = TRUE)
+}
+\arguments{
+\item{defaults}{return only the extensions enabled by default vs. a list of all possible extensions}
 }
 \value{
 A \code{character} vector listing all available extensions.
@@ -21,7 +24,7 @@ support for several extensions described below. To turn these on globally in
 the \pkg{markdown} package, simply place some or all of them in a character
 vector and assign to the global option \code{markdown.extensions} like so:
 
-\code{options(markdown.extensions = markdownExtensions())}
+\code{options(rhoedown.extensions = markdownExtensions())}
 
 To override the global option, pass the \code{extensions} as an argument to
 one of the render functions, e.g.:
@@ -39,22 +42,38 @@ Description of all extensions:
 \item{\code{'fenced_code'}}{ treat text as verbatim when surrounded with
 begin and ending lines with three ~ or \emph{`} characters.  }
 
+\item{\code{'footnotes'}}{ make footnotes. }
+
 \item{\code{'autolink'}}{ create HTML links from urls and email addresses. }
 
 \item{\code{'strikethrough'}}{ create strikethroughs by surrounding text with
 ~~.  }
 
-\item{\code{'lax_spacing'}}{ allow HTML tags inside paragraphs without being
-surrounded by newlines.  }
+\item{\code{'underline'}}{create underlines by surrounding text with
+__.  }
 
-\item{\code{'space_headers'}}{ add a space between header hashes and the
-header itself.  }
+\item{\code{'highlight'}}{create highlights by surrounding text with
+==.  }
+
+\item{\code{'quote'}}{replace quotation characters with HTML: "foo bar" changes to  <q>foo bar</q> }
 
 \item{\code{'superscript'}}{ translate ^ and subsequent text into HTML
 superscript. }
 
-\item{\code{'latex_math'}}{ transforms all math equations into syntactically
-correct MathJax equations.  }
+\item{\code{'subscript'}}{ translate ~ and subsequent text into HTML
+superscript. }
+
+\item{\code{'space_headers'}}{ add a space between header hashes and the
+header itself.  }
+
+\item{\code{'math'}}{ transforms all math equations into syntactically
+correct MathJax equations. Math delimited by $$ is translated into inline or display
+depending on context.  }
+
+\item{\code{'math_explicit'}}{ changes interpretation of \code{math} to use single $
+vs. double $$ to determine inline vs. display equations  }
+
+\item{\code{'disable_indented_code'}}{ do not interpret indented text as code blocks. }
 
 }
 
@@ -66,13 +85,13 @@ off.
 markdownExtensions()
 
 # To turn on all markdown extensions globally:
-options(markdown.extensions = markdownExtensions())
+options(rhoedown.extensions = markdownExtensions())
 
 # To turn off all markdown extensions globally:
-options(markdown.extensions = NULL)
+options(rhoedown.extensions = NULL)
 # The following examples are short, so we set the HTML option 'fragment_only'
 
-options(markdown.HTML.options = "fragment_only")
+options(rhoedown.HTML.options = "fragment_only")
 
 # no_intra_emphasis example
 cat(markdownToHTML(text = "foo_bar_function", extensions = c()))
@@ -138,6 +157,7 @@ cat(markdownToHTML(text = "#Not A Header\\nbecause there is no space between # a
 # superscript example
 cat(markdownToHTML(text = "2^10", extensions = c()))
 cat(markdownToHTML(text = "2^10", extensions = c("superscript")))
+cat(markdownToHTML(text = "2~10", extensions = c("subscript")))
 }
 \seealso{
 \link{markdownHTMLOptions}

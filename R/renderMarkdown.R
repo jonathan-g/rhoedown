@@ -99,7 +99,7 @@ rendererOutputType <- function(name) {
 #' (renderMarkdown(text = ''))
 renderMarkdown <- function(
   file, output = NULL, text = NULL, renderer = 'HTML', renderer.options = NULL,
-  extensions = getOption('markdown.extensions'), encoding = getOption('encoding')
+  extensions = getOption('rhoedown.extensions'), encoding = getOption('encoding')
 ) {
 
   if (!rendererExists(renderer))
@@ -120,7 +120,7 @@ renderMarkdown <- function(
 
   # Options
   if (is.null(renderer.options))
-    renderer.options <- getOption(paste('markdown', renderer, 'options', sep = '.'))
+    renderer.options <- getOption(paste('rhoedown', renderer, 'options', sep = '.'))
 
   # HTML options must be a character vector.
   if (renderer == 'HTML') {
@@ -293,12 +293,12 @@ renderMarkdown <- function(
 #' # write HTML to an output file
 #' markdownToHTML(text = "_Hello_, **World**!", output = "test.html")
 markdownToHTML <- function(
-  file, output = NULL, text = NULL, options = getOption('markdown.HTML.options'),
-  extensions = getOption('markdown.extensions'),
+  file, output = NULL, text = NULL, options = getOption('rhoedown.HTML.options'),
+  extensions = getOption('rhoedown.extensions'),
   title = '',
-  stylesheet = getOption('markdown.HTML.stylesheet'),
-  header = getOption('markdown.HTML.header'),
-  template = getOption('markdown.HTML.template'),
+  stylesheet = getOption('rhoedown.HTML.stylesheet'),
+  header = getOption('rhoedown.HTML.header'),
+  template = getOption('rhoedown.HTML.template'),
   fragment.only = FALSE,
   encoding = getOption('encoding')
 ) {
@@ -436,11 +436,11 @@ smartypants <- function(file, output, text) {
 #
 # To turn on all extensions:
 #
-# options(markdown.extensions = markdownExtensions())
+# options(rhoedown.extensions = markdownExtensions())
 #
 # To turn off all extensions:
 #
-# options(markdown.extensions = c())
+# options(rhoedown.extensions = c())
 #
 
 
@@ -456,7 +456,7 @@ smartypants <- function(file, output, text) {
 #' the \pkg{markdown} package, simply place some or all of them in a character
 #' vector and assign to the global option \code{markdown.extensions} like so:
 #'
-#' \code{options(markdown.extensions = markdownExtensions())}
+#' \code{options(rhoedown.extensions = markdownExtensions())}
 #'
 #' To override the global option, pass the \code{extensions} as an argument to
 #' one of the render functions, e.g.:
@@ -474,27 +474,44 @@ smartypants <- function(file, output, text) {
 #' \item{\code{'fenced_code'}}{ treat text as verbatim when surrounded with
 #' begin and ending lines with three ~ or \emph{`} characters.  }
 #'
+#' \item{\code{'footnotes'}}{ make footnotes. }
+#'
 #' \item{\code{'autolink'}}{ create HTML links from urls and email addresses. }
 #'
 #' \item{\code{'strikethrough'}}{ create strikethroughs by surrounding text with
 #' ~~.  }
 #'
-#' \item{\code{'lax_spacing'}}{ allow HTML tags inside paragraphs without being
-#' surrounded by newlines.  }
+#' \item{\code{'underline'}}{create underlines by surrounding text with
+#' __.  }
 #'
-#' \item{\code{'space_headers'}}{ add a space between header hashes and the
-#' header itself.  }
+#' \item{\code{'highlight'}}{create highlights by surrounding text with
+#' ==.  }
+#'
+#' \item{\code{'quote'}}{replace quotation characters with HTML: "foo bar" changes to  <q>foo bar</q> }
 #'
 #' \item{\code{'superscript'}}{ translate ^ and subsequent text into HTML
 #' superscript. }
 #'
-#' \item{\code{'latex_math'}}{ transforms all math equations into syntactically
-#' correct MathJax equations.  }
+#' \item{\code{'subscript'}}{ translate ~ and subsequent text into HTML
+#' superscript. }
+#'
+#' \item{\code{'space_headers'}}{ add a space between header hashes and the
+#' header itself.  }
+#'
+#' \item{\code{'math'}}{ transforms all math equations into syntactically
+#' correct MathJax equations. Math delimited by $$ is translated into inline or display
+#' depending on context.  }
+#'
+#' \item{\code{'math_explicit'}}{ changes interpretation of \code{math} to use single $
+#' vs. double $$ to determine inline vs. display equations  }
+#'
+#' \item{\code{'disable_indented_code'}}{ do not interpret indented text as code blocks. }
 #'
 #' }
 #'
 #' See the EXAMPLES section to see the output of each extension turned on or
 #' off.
+#' @param defaults return only the extensions enabled by default vs. a list of all possible extensions
 #' @return A \code{character} vector listing all available extensions.
 #' @seealso \link{markdownHTMLOptions}
 #' @export markdownExtensions
@@ -503,10 +520,10 @@ smartypants <- function(file, output, text) {
 #' markdownExtensions()
 #'
 #' # To turn on all markdown extensions globally:
-#' options(markdown.extensions = markdownExtensions())
+#' options(rhoedown.extensions = markdownExtensions())
 #'
 #' # To turn off all markdown extensions globally:
-#' options(markdown.extensions = NULL)
+#' options(rhoedown.extensions = NULL)
 #'
 #' @example inst/examples/markdownExtensions.R
 
@@ -538,15 +555,15 @@ markdownExtensions <- function(defaults = TRUE) {
 #
 # To turn on all options:
 #
-# options(markdown.HTML.options = markdownHTMLOptions())
+# options(rhoedown.HTML.options = markdownHTMLOptions())
 #
 # To turn on default options:
 #
-# options(markdown.HTML.options = markdownHTMLOptions(defaults = TRUE))
+# options(rhoedown.HTML.options = markdownHTMLOptions(defaults = TRUE))
 #
 # To turn off all options:
 #
-# options(markdown.HTML.options = c())
+# options(rhoedown.HTML.options = c())
 #
 
 
@@ -564,11 +581,11 @@ markdownExtensions <- function(defaults = TRUE) {
 #' character vector and assign to the global option \code{markdown.HTML.options}
 #' like so:
 #'
-#' \code{options(markdown.HTML.options = markdownHTMLOptions())}
+#' \code{options(rhoedown.HTML.options = markdownHTMLOptions())}
 #'
 #' To reset the options to package default, use:
 #'
-#' \code{options(markdown.HTML.options = markdownHTMLOptions(default = TRUE))}
+#' \code{options(rhoedown.HTML.options = markdownHTMLOptions(default = TRUE))}
 #'
 #' To override the global option, pass the \code{options} as an argument:
 #'
@@ -631,13 +648,13 @@ markdownExtensions <- function(defaults = TRUE) {
 #' markdownHTMLOptions()
 #'
 #' # To turn on all HTML options globally:
-#' options(markdown.HTML.options = markdownHTMLOptions())
+#' options(rhoedown.HTML.options = markdownHTMLOptions())
 #'
 #' # To turn off all HTML options globally:
-#' options(markdown.HTML.options = NULL)
+#' options(rhoedown.HTML.options = NULL)
 #'
 #' # To turn on package default HTML options globally:
-#' options(markdown.HTML.options = markdownHTMLOptions(default = TRUE))
+#' options(rhoedown.HTML.options = markdownHTMLOptions(default = TRUE))
 #'
 #' @example inst/examples/HTMLOptions.R
 markdownHTMLOptions <- function(defaults = FALSE) {
@@ -646,19 +663,19 @@ markdownHTMLOptions <- function(defaults = FALSE) {
     'escape', 'fragment_only', 'hard_wrap', 'use_xhtml', 'smartypants',
     'base64_images', 'mathjax', 'highlight_code'
   )
-  if (defaults) tail(allOptions,5) else allOptions
+  if (defaults) utils::tail(allOptions,5) else allOptions
 }
 
 .onLoad <- function(libname, pkgname) {
 
-  if (is.null(getOption('markdown.extensions')))
-    options(markdown.extensions = markdownExtensions())
+  if (is.null(getOption('rhoedown.extensions')))
+    options(rhoedown.extensions = markdownExtensions())
 
-  if (is.null(getOption('markdown.HTML.options')))
-    options(markdown.HTML.options = markdownHTMLOptions(defaults = TRUE))
+  if (is.null(getOption('rhoedown.HTML.options')))
+    options(rhoedown.HTML.options = markdownHTMLOptions(defaults = TRUE))
 
-  if (is.null(getOption('markdown.HTML.stylesheet'))) {
+  if (is.null(getOption('rhoedown.HTML.stylesheet'))) {
     sheet <- system.file('resources', 'markdown.css', package = 'rhoedown')
-    options(markdown.HTML.stylesheet = sheet)
+    options(rhoedown.HTML.stylesheet = sheet)
   }
 }

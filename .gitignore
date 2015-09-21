@@ -5,5 +5,8 @@
 src/*.o
 src/*.so
 src/*.rds
+src/*.dll
 tools/sundown
 rhoedown.Rproj
+src-i386
+src-x64
