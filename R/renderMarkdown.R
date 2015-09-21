@@ -543,7 +543,7 @@ markdownExtensions <- function(defaults = TRUE) {
   if (defaults) {
     c('tables', 'fenced_code', 'autolink',
       'superscript', 'subscript',
-      'math', 'math_expliciit',
+      'math', 'math_explicit',
       'space_headers',
       'no_intra_emphasis')
   } else {
